@@ -1,0 +1,66 @@
+apply plugin: "com.jfrog.artifactory"
+apply plugin: "maven-publish"
+
+artifactory {
+    apply from: "$projectDir/utils.gradle"
+
+    contextUrl = 'https://splanesrevolhope.jfrog.io/artifactory'
+    publish {
+        contextUrl = 'https://splanesrevolhope.jfrog.io/artifactory'
+        //A closure defining publishing information
+        repository {
+            repoKey = 'splanes-revolhope-libs-release'
+            //The Artifactory repository key to publish to
+            username = findProperty('bintray.user')          //The publisher user name
+            password = findProperty('bintray.apikey')      //The publisher password or API key
+            ivy {
+                //Optional section for configuring Ivy publication. Assumes Maven repo layout if not specified
+                //ivyLayout = 'splanesrevolhope/kotlin-extensions/v0.0.1/Alpha/ivy-v0.0.1xml'
+                //artifactLayout = 'splanesrevolhope/kotlin-extensions/v0.0.1/kotlin-extensions-alpha-0.0.1.'
+                mavenCompatible = true
+                //Convert any dots in an [organization] layout value to path separators, similar to Maven's groupId-to-path conversion. True if not specified
+            }
+        }
+        defaults {
+            publications('ktx_extensions_core', 'aar')
+
+            publishArtifacts = true
+
+            // Below isn't on official doc
+            properties = ['qa.level': 'basic', 'dev.team': 'core']
+            publishPom = true // Publish generated POM files to Artifactory (true by default)
+        }
+        resolve {
+            repository {
+                repoKey = 'splanes-revolhope-libs-release'
+                username = findProperty('bintray.user')
+                password = findProperty('bintray.apiKey')
+                maven = true
+            }
+        }
+    }
+    clientConfig.setIncludeEnvVars(true)
+    //clientConfig.setEnvVarsExcludePatterns('*password*,*secret*')
+    //clientConfig.setEnvVarsIncludePatterns('*not-secret*')
+    clientConfig.info.addEnvironmentProperty('test.adding.dynVar', new Date().toString())
+    clientConfig.info.setBuildName('kotlin-ext-core')
+    clientConfig.info.setBuildNumber(getVersion())
+    clientConfig.timeout = 600
+    // Artifactory connection timeout (in seconds). The default timeout is 300 seconds.
+}
+
+artifactoryPublish {
+    skip = false //Skip build info analysis and publishing (false by default)
+    contextUrl = 'https://splanesrevolhope.jfrog.io/artifactory'
+    publications ('ktx_extensions_core', 'aar')
+    properties = ['qa.level': 'basic', 'dev.team': 'core']
+    /*properties {
+        c '**:**:**:*@*', cProperty: 'only in c'
+    }*/
+    clientConfig.publisher.repoKey = 'splanes-revolhope-libs-release'
+    clientConfig.publisher.username = findProperty('bintray.user')
+    clientConfig.publisher.password = findProperty('bintray.apikey')
+
+    // Minimum file size in KB for which the plugin performs checksum deploy optimization. Default: 10. Set to 0 to disable uploading files with checksum that already exists in Artifactory.
+    clientConfig.publisher.minChecksumDeploySizeKb = 10
+}

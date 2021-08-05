@@ -1,0 +1,65 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    apply from: "$projectDir/versions.gradle"
+    repositories {
+
+        mavenCentral()
+
+        maven {
+            // The Artifactory (preferably virtual) repository to resolve from
+            url "https://splanesrevolhope.jfrog.io/artifactory/libs-releases"
+
+            // Optional resolver credentials (leave out to use anonymous resolution)
+            credentials {
+                username = findProperty('bintray.user') // Artifactory user name
+                password = findProperty('bintray.apikey') // Password or API Key
+            }
+        }
+
+        google()
+    }
+
+    dependencies {
+        classpath artifactories.buildGradle
+        classpath artifactories.kotlinGradle
+        classpath artifactories.jfrogInfoExtractor
+    }
+}
+
+apply plugin: "com.jfrog.artifactory"
+
+apply from: "$projectDir/utils.gradle"
+
+apply from: "$projectDir/artifactory.gradle"
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+private def getVersion(Boolean isSimpleName, Boolean isExtensionIncluded, String pathSeparator) {
+    String classifier = findProperty('version.classifier', false)
+    String versionName = versionName()
+    String name = "$versionName-$classifier"
+    if (isSimpleName) {
+        return name
+    } else {
+        String org = findProperty('artifact.organization')
+        String module = findProperty('artifact.module')
+        String revision = findProperty('artifact.revision')
+        String completeName = org + pathSeparator + module + pathSeparator + revision
+        if (isExtensionIncluded) {
+            String extension = findProperty('artifact.extension')
+            return "$completeName.$extension"
+        } else {
+            return completeName
+        }
+    }
+}
+
+private def getVersion() {
+    return getVersion(true, false, null)
+}
+
+private def getArtifact() {
+    return getVersion(false, true, "/")
+}

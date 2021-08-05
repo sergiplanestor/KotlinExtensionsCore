@@ -1,0 +1,30 @@
+def getProperties(Boolean isLocal) {
+    Properties properties = new Properties()
+    String filename = isLocal ? 'local.properties' : 'gradle.properties'
+    properties.load(project.rootProject.file(filename).newDataInputStream())
+    return properties
+}
+
+def findProperty(String name) {
+    return getProperties(true).getProperty(name)
+}
+
+def findProperty(String name, Boolean isLocal) {
+    return getProperties(isLocal).getProperty(name)
+}
+
+def versionName() {
+    String major = findProperty('version.major', false)
+    String minor = findProperty('version.minor', false)
+    String patch = findProperty('version.patch', false)
+    return "$major.$minor.$patch"
+}
+
+def versionCode() {
+    return findProperty('version.code') as Integer
+}
+
+ext.getProperties = this.&getProperties
+ext.findProperty = this.&findProperty
+ext.versionName = this.&versionName
+ext.versionCode = this.&versionCode
