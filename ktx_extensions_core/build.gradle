@@ -4,21 +4,20 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.github.sergiplanestor'
-
-def sdkConfig = rootProject.ext.sdkConfig
+def config = rootProject.ext.defaultConfig
 
 android {
-    compileSdk sdkConfig.compile
-    buildToolsVersion "30.0.3"
+
+    compileSdk config.compileApiSdk
+    buildToolsVersion config.buildTools
 
     defaultConfig {
-        minSdk sdkConfig.min
-        targetSdk sdkConfig.target
+        minSdk config.minApiSdk
+        targetSdk config.targetApiSdk
         versionCode versionCode()
         versionName versionName()
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner config.instrumentalRunner
         consumerProguardFiles "consumer-rules.pro"
     }
 
@@ -37,8 +36,8 @@ android {
     }
 }
 
-apply plugin: 'maven-publish'
 
+// FIXME: Packing javadocs separately Tasks, check when first publish had been done successfully
 //task androidJavadocs(type: Javadoc) {
 //    source = android.sourceSets.main.java.srcDirs
 //    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
@@ -71,8 +70,8 @@ afterEvaluate {
                 from components.release
 
                 // Adds javadocs and sources as separate jars.
-//                artifact androidJavadocsJar
-//                artifact androidSourcesJar
+                // artifact androidJavadocsJar
+                artifact androidSourcesJar
 
                 // You can then customize attributes of the publication as shown below.
                 groupId = 'com.github.sergiplanestor'
@@ -85,8 +84,8 @@ afterEvaluate {
                 from components.debug
 
                 // Adds javadocs and sources as separate jars.
-//                artifact androidJavadocsJar
-//                artifact androidSourcesJar
+                // artifact androidJavadocsJar
+                artifact androidSourcesJar
 
                 groupId = 'com.github.sergiplanestor'
                 artifactId = 'ktx-ext-core-debug'

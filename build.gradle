@@ -2,36 +2,17 @@
 buildscript {
     apply from: "$projectDir/versions.gradle"
     repositories {
-
         mavenCentral()
-
-        /*maven {
-            // The Artifactory (preferably virtual) repository to resolve from
-            /url "https://splanesrevolhope.jfrog.io/artifactory/libs-releases"
-
-            // Optional resolver credentials (leave out to use anonymous resolution)
-            credentials {
-                username = findProperty('bintray.user') // Artifactory user name
-                password = findProperty('bintray.apikey') // Password or API Key
-            }
-        }*/
-
         google()
     }
 
     dependencies {
         classpath artifactories.buildGradle
         classpath artifactories.kotlinGradle
-        classpath artifactories.jfrogInfoExtractor
     }
 }
 
-
-// apply plugin: "com.jfrog.artifactory"
-
 apply from: "$projectDir/utils.gradle"
-
-// apply from: "$projectDir/artifactory.gradle"
 
 task clean(type: Delete) {
     delete rootProject.buildDir

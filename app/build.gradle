@@ -1,24 +1,22 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'com.jfrog.artifactory'
-    id 'maven-publish'
 }
 
-def sdkConfig = rootProject.ext.sdkConfig
+def config = rootProject.ext.defaultConfig
 
 android {
-    compileSdk sdkConfig.compile
-    buildToolsVersion "30.0.3"
+    compileSdk config.compileApiSdk
+    buildToolsVersion config.buildTools
 
     defaultConfig {
-        applicationId "com.splanes.kotlinextensionscore"
-        minSdk sdkConfig.min
-        targetSdk sdkConfig.target
+        applicationId config.appId
+        minSdk config.minApiSdk
+        targetSdk config.targetApiSdk
         versionCode versionCode()
         versionName versionName()
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner config.instrumentalRunner
     }
 
     buildTypes {
